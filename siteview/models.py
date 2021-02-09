@@ -9,7 +9,7 @@ class SlideShow(models.Model):
     subtitle = models.CharField(_('Subtitle'), max_length=256)
     image = models.ImageField(_('BackGround'), upload_to='site/slideshow')
     action_text = models.CharField(_('action text'), max_length=20)
-    action_url = models.URLField(_('action url'))
+    action_url = models.CharField(_('action url'), blank=True, max_length=200)
 
     def __str__(self):
         return self.title

@@ -48,7 +48,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password')
         }),
         (_('Personal info'), {
-            'fields': ('first_name', 'last_name', 'avatar')
+            'fields': ('first_name', 'last_name', 'image')
         }),
         (_('Permissions'), {
             'fields': ('is_staff', 'is_active', 'is_superuser')
@@ -68,8 +68,6 @@ class AddressAdmin(admin.ModelAdmin):
     list_filter = ('user',)
 
 
-
-
 class ShopAdmin(admin.ModelAdmin):
     list_display = ('user', 'name', 'description', 'image', 'slug')
     search_fields = ('user', 'name', 'slug')
@@ -83,9 +81,6 @@ class EmailAdmin(admin.ModelAdmin):
     list_display = ('user', 'subject', 'body')
     search_fields = ('user', 'subject')
     list_filter = ('user',)
-
-
-
 
 
 admin.site.register(User, UserAdmin)

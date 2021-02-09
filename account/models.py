@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
+
     def _create_user(self, email, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
@@ -41,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('Last name'), max_length=60, null=True)
     email = models.EmailField(_('Email'), max_length=100, db_index=True, unique=True)
     password = models.CharField(_('Password'), max_length=150)
-    mobile = models.CharField(_('Mobile'), blank=True,max_length=150)
+    mobile = models.CharField(_('Mobile'), blank=True, max_length=150)
     image = models.ImageField(_('Image'), upload_to='users/image')
     is_staff = models.BooleanField(
         _('staff status'),
@@ -66,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return str(self.first_name) + ' ' + str(self.last_name)
-    
+
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
@@ -98,7 +99,7 @@ class Email(models.Model):
     user = models.ForeignKey('User', on_delete=models.DO_NOTHING, related_name='emails', related_query_name='emails', )
     # to = models.ForeignKey('self', on_delete=models.DO_NOTHING)
     subject = models.CharField(_("Subject"), max_length=150)
-    body = models.TextField(_('body'),)
+    body = models.TextField(_('body'), )
 
     def __str__(self):
         return self.user.first_name
