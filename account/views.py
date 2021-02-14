@@ -9,8 +9,10 @@ from django.contrib.auth.views import LogoutView
 #     template_name = 'login.html'
 #     form_class = ContactForm
 #     success_url = '/'
+import product
 from account.forms import UserRegistrationForm, UserLoginForm
 from account.models import User
+from product.models import Category
 
 
 def login_view(request):
@@ -26,11 +28,11 @@ def login_view(request):
                 return redirect('home')
         else:
             pass
-        context = {'form': form}
+        context = {'form': form, 'categories': Category.objects.all()}
         print(form.is_valid())
     else:
         form = UserLoginForm()
-        context = {'form': form}
+        context = {'form': form, 'categories': Category.objects.all()}
     return render(request, 'account/login.html', context)
 
 
@@ -41,6 +43,7 @@ def logout_view(request):
 
 class LogoutView(LogoutView):
     redirect_field_name = '/login/'
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -60,10 +63,10 @@ def register_view(request):
             return redirect('login')
         else:
             pass
-        context = {'form': form}
+        context = {'form': form, 'categories': Category.objects.all()}
     else:
         form = UserRegistrationForm()
-        context = {'form': form}
+        context = {'form': form, 'categories': Category.objects.all()}
     return render(request, 'account/register.html', context)
 
 

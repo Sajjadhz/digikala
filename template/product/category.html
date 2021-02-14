@@ -144,7 +144,7 @@
 									<option value="4">Best Selling</option>
 								</select>
                                 </div>
-                                <p>Showing all 4 results</p>
+                                <p>Showing all {{ child_categories.count }} results</p>
                             </div>
                             <div class="col-12 col-sm-4 text-center text-sm-right">
                                 <ul class="nav nav-tabs ml-auto">
@@ -220,4 +220,23 @@
     </div>
     <!-- End Shop Page -->
 
+{% endblock %}
+{% block javascript %}
+    <script>
+        function clear_basket_item(basket_item_id) {
+            const data = JSON.stringify({basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#basket_item${data.basket_item_id}`).remove()
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                },
+            });
+        }
+    </script>
 {% endblock %}

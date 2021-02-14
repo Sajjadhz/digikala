@@ -4,15 +4,29 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from order.models import OrderItems, Payment, Order, Basket, BasketItems
+from order.models import OrderItem, Payment, Order, Basket, BasketItem
 
 User = get_user_model()
 
 
+class BasketItemsInline(admin.TabularInline):
+    model = BasketItem
+    extra = 1
+    field = ('basket', 'shop_product', 'price')
+    show_change_link = True
+
+
 class OrderItemsInline(admin.TabularInline):
-    model = OrderItems
+    model = OrderItem
     extra = 1
     field = ('order', 'shop_product', 'price')
+    show_change_link = True
+
+
+class OrderInline(admin.TabularInline):
+    model = Order
+    extra = 1
+    field = ('user', 'created_at', 'updated_at', 'description')
     show_change_link = True
 
 
@@ -30,20 +44,10 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemsInline, PaymentInline]
 
 
-class OrderInline(admin.TabularInline):
-    model = Order
-    extra = 1
-    field = ('user', 'created_at', 'updated_at', 'description')
-    show_change_link = True
-
-
 class OrderItemsAdmin(admin.ModelAdmin):
     list_display = ('order', 'shop_product', 'quantity', 'price')
     search_fields = ('order', 'shop_product')
     list_filter = ('order',)
-
-
-
 
 
 class PaymentAdmin(admin.ModelAdmin):
@@ -52,14 +56,11 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ('order',)
 
 
-
-
-
 class BasketAdmin(admin.ModelAdmin):
     list_display = ('user', 'created_at', 'updated_at', 'description')
     search_fields = ('user',)
     list_filter = ('user',)
-    inlines = ['BasketItemsInline']
+    inlines = [BasketItemsInline]
 
 
 class BasketInline(admin.TabularInline):
@@ -70,13 +71,13 @@ class BasketInline(admin.TabularInline):
 
 
 class BasketItemsAdmin(admin.ModelAdmin):
-    list_display = ('order', 'shop_product', 'quantity', 'price')
-    search_fields = ('order', 'shop_product')
-    list_filter = ('order',)
+    list_display = ('basket', 'shop_product', 'quantity', 'price')
+    search_fields = ('basket', 'shop_product')
+    list_filter = ('basket',)
 
 
-class BasketItemsInline(admin.TabularInline):
-    model = BasketItems
-    extra = 1
-    field = ('order', 'shop_product', 'price')
-    show_change_link = True
+admin.site.register(Basket, BasketAdmin)
+admin.site.register(BasketItem, BasketItemsAdmin)
+admin.site.register(Payment, PaymentAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemsAdmin)

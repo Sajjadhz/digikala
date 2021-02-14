@@ -189,3 +189,22 @@
     <a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
 
 {% endblock %}
+{% block javascript %}
+    <script>
+        function clear_basket_item(basket_item_id) {
+            const data = JSON.stringify({basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#basket_item${data.basket_item_id}`).remove()
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                },
+            });
+        }
+    </script>
+{% endblock %}

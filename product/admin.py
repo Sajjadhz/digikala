@@ -125,6 +125,7 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ('product', 'author')
     inlines = [CommentLikeInline]
 
+
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('product', 'user')
     search_fields = ('product', 'user')

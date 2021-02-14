@@ -69,15 +69,13 @@
 
                                 <div class="price-box-bar">
                                     <div class="cart-and-bay-btn">
-                                        <a class="btn hvr-hover" data-fancybox-close="" href="#">Buy New</a>
-                                        <a class="btn hvr-hover" data-fancybox-close="" href="#">Add to cart</a>
+                                        <a class="btn hvr-hover" data-fancybox-close="" href="{% url 'shop_product' product.slug %}">فروشگاه های عرضه کننده</a>
                                     </div>
                                 </div>
 
                                 <div class="add-to-btn">
                                     <div class="add-comp">
                                         <a class="btn hvr-hover" href="#"><i class="fas fa-heart"></i></a>
-                                        <a class="btn hvr-hover" href="#"><i class="fas fa-sync-alt"></i> Add to Compare</a>
                                     </div>
                                     <div class="share-bar">
                                         <a class="btn hvr-hover" href="#"><i class="fab fa-facebook" aria-hidden="true"></i></a>
@@ -102,8 +100,6 @@
                             {% endif %}
                             <div id="comment_container">
                                 {% for comment in comments %}
-                                    <div>
-
                                         <div class="mt-3">
                                             <p class="text-secondary">{{ comment.author.first_name }} {{ comment.author.last_name }}</p>
                                             {{ comment.content }}<br>
@@ -114,7 +110,6 @@
                                                 <button class="bg-transparent border-0" onclick="likeComment({{ comment.id }},false)" ><i class="fas fa-thumbs-down text-danger"></i></button>
                                                 <span id="dislike_count_container{{ comment.id }}" class="text-danger">{{ comment.dislike_count }}</span>
                                         </div>
-                                    </div>
                                 {% endfor %}
                             </div>
                     {% endif %}
@@ -184,17 +179,18 @@
             console.log(500,"this is content")
             console.log(content)
             console.log('end content')
-            const data = JSON.stringify({content, post_id:{{post.id}}})
+            const data = JSON.stringify({content, product_id:{{product.id}}})
             $.ajax({
                 type: "post",
                 url: "{% url 'create_comment' %}",
                 data: data,
                 success: function (response) {
                     const data = JSON.parse(response)
-                    $( "#comment_container" ).prepend( `<div>
-                                ${data.first_name}
+                    console.log("data : ", data)
+                    if (data.content != ''){
+                    $( "#comment_container" ).prepend( `
                                 <div class="mt-3">
-                                    <p>${comment.author.first_name} ${comment.author.last_name}  <br>
+                                    <p>${data.first_name} ${data.last_name}  <br>
                                          ${data.content}
                                     </p>
                                     <div>
@@ -204,10 +200,32 @@
                                         <span id="dislike_count_container${data.comment_id}">${data.dislike_count}</span>
 
                                     </div>
-                                </div>
-                            </div>` );
+                                </div>` );}
+                    else {
+                        alert("لازمه وارد بشید")
+                    }
+                },
+                error: function (error) {
+                    alert("لازمه وارد بشید")
                 }
             });
         }, false);
+    </script>
+    <script>
+        function clear_basket_item(basket_item_id) {
+            const data = JSON.stringify({basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#basket_item${data.basket_item_id}`).remove()
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                },
+            });
+        }
     </script>
  {% endblock %}

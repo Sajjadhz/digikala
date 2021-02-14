@@ -1,0 +1,113 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>فروشگاه های عرضه کننده</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'product_detail' product.slug %}">صفحه کالا</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+    <!-- Start Cart  -->
+    <div class="cart-box-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-main table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>نام فروشگاه</th>
+                                    <th>نام کالا</th>
+                                    <th>قیمت</th>
+                                    <th>تعداد</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for shop_product in shop_products %}
+                                <tr>
+                                        <td class="name-pr">
+                                            <a href="#">{{ shop_product.shop.name }}</a>
+                                        </td>
+                                        <td class="text-secondary">
+                                            <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                                        </td>
+                                        <td class="price-pr">
+                                            <p><span>تومان</span> {{ shop_product.price }}</p>
+                                        </td>
+                                        <td class="quantity-box"><input id="quantity{{ shop_product.id }}" type="number" size="4" value="1" min="0" step="1" class="c-input-text qty text"></td>
+                                        <td class="remove-pr">
+                                            <a class="btn hvr-hover text-white" onclick="create_basket_item({{ shop_product.id }}, {{ user.basket.id }}, {{ shop_product.price }}, {{ user.basket.basket_items.all.count }})">اضافه کردن به سبد خرید</a>
+                                        </td>
+                                    </tr>
+                            {% endfor %}
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Cart -->
+{% endblock %}
+{% block javascript %}
+    <script>
+        function create_basket_item(shop_product_id, basket_id, price, basket_item_count) {
+            console.log("shop_product_id : ", shop_product_id)
+            console.log("basket : ", basket_id)
+            console.log("price : ", price)
+            quantity = $(`#quantity${shop_product_id}`).val()
+            console.log("quantity : ", quantity)
+            const data = JSON.stringify({shop_product_id, basket_id, price, quantity})
+            $.ajax({
+                type: "post",
+                url: '{% url 'create_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    if (data.mode==1){
+                        $(`#basket_item_quantity${data.basket_item_id}`).text(`${data.quantity}`)
+                        $('#basket_total_price').text(`${data.basket_total_price}`)
+                    }
+                    else {
+                     $('#side_basket').append(`<li id="basket_item${ data.basket_item_id }">
+                                    <h6 class="row justify-content-between"><a href='#'>${ data.product_name }</a> <span style="cursor: pointer" onclick="clear_basket_item(${ data.basket_item_id })"><i class="fa fa-trash" aria-hidden="true"></i></span></h6>
+                                    <p><span id="basket_item_quantity${data.basket_item_id}">${ data.quantity }</span>x - <span class="price">$${ data.price }</span></p>
+                                </li>`)
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                    }
+                },
+            });
+        }
+    </script>
+    <script>
+        function clear_basket_item(basket_item_id) {
+            const data = JSON.stringify({basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#basket_item${data.basket_item_id}`).remove()
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                },
+            });
+        }
+    </script>
+{% endblock %}
