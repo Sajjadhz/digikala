@@ -9,24 +9,31 @@ from order.models import OrderItem, Payment, Order, Basket, BasketItem
 User = get_user_model()
 
 
+class BasketInline(admin.TabularInline):
+    model = Basket
+    extra = 1
+    field = ('user', 'created_at', 'updated_at', 'description', 'total_price')
+    show_change_link = True
+
+
 class BasketItemsInline(admin.TabularInline):
     model = BasketItem
     extra = 1
-    field = ('basket', 'shop_product', 'price')
+    field = ('basket', 'shop_product', 'quantity',  'price', 'total')
     show_change_link = True
 
 
 class OrderItemsInline(admin.TabularInline):
     model = OrderItem
     extra = 1
-    field = ('order', 'shop_product', 'price')
+    field = ('order', 'shop_product', 'quantity',  'price', 'total')
     show_change_link = True
 
 
 class OrderInline(admin.TabularInline):
     model = Order
     extra = 1
-    field = ('user', 'created_at', 'updated_at', 'description')
+    field = ('user', 'created_at', 'updated_at', 'description', 'draft', 'total_price')
     show_change_link = True
 
 
@@ -38,7 +45,7 @@ class PaymentInline(admin.TabularInline):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created_at', 'updated_at', 'description')
+    list_display = ('user', 'created_at', 'updated_at', 'description', 'draft', 'total_price')
     search_fields = ('user',)
     list_filter = ('user',)
     inlines = [OrderItemsInline, PaymentInline]
@@ -57,21 +64,14 @@ class PaymentAdmin(admin.ModelAdmin):
 
 
 class BasketAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created_at', 'updated_at', 'description')
+    list_display = ('user', 'created_at', 'updated_at', 'description', 'total_price')
     search_fields = ('user',)
     list_filter = ('user',)
     inlines = [BasketItemsInline]
 
 
-class BasketInline(admin.TabularInline):
-    model = Basket
-    extra = 1
-    field = ('user', 'created_at', 'updated_at', 'description')
-    show_change_link = True
-
-
 class BasketItemsAdmin(admin.ModelAdmin):
-    list_display = ('basket', 'shop_product', 'quantity', 'price')
+    list_display = ('basket', 'shop_product', 'quantity', 'price', 'total')
     search_fields = ('basket', 'shop_product')
     list_filter = ('basket',)
 

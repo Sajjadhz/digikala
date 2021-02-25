@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from order.admin import BasketItemsInline, OrderItemsInline
 from product.models import Category, Product, ShopProduct, ProductImage, Comment, Like, ProductMeta, Brand, \
     ProductSingleSetting, CommentLike
 
@@ -92,7 +93,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'brand', 'slug', 'detail')
     search_fields = ('name', 'brand', 'category')
     list_filter = ('brand', 'category')
-    inlines = [ProductMetaInline, ShopProductInline, ProductImageInline, CommentInline, LikeInline, ProductSingleSettingInline]
+    inlines = [ProductMetaInline, ShopProductInline, ProductImageInline, CommentInline, LikeInline,
+               ProductSingleSettingInline]
 
 
 class ProductSingleSettingAdmin(admin.ModelAdmin):
@@ -111,6 +113,7 @@ class ShopProductAdmin(admin.ModelAdmin):
     list_display = ('shop', 'product', 'price', 'quantity')
     search_fields = ('shop', 'product')
     list_filter = ('shop', 'product')
+    inlines = [BasketItemsInline, OrderItemsInline]
 
 
 class ProductImageAdmin(admin.ModelAdmin):

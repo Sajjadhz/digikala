@@ -26,8 +26,8 @@
                 <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
                     <div class="product-categori">
                         <div class="search-product">
-                            <form action="#">
-                                <input class="form-control" placeholder="Search here..." type="text">
+                            <form action="{% url 'search' category.slug %}" method="get">
+                                <input class="form-control" placeholder="Search here..." type="text" name='q'>
                                 <button type="submit"> <i class="fa fa-search"></i> </button>
                             </form>
                         </div>
@@ -56,77 +56,6 @@
                                     {% endfor %}
                             </div>
                         </div>
-                        <!-- Start Brands  -->
-                        <div class="filter-brand-left">
-                            <div class="title-left">
-                                <h3>Brand</h3>
-                            </div>
-                            <div class="brand-box">
-                                <ul>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios1" value="Yes" type="radio">
-                                            <label for="Radios1"> Supreme </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios2" value="No" type="radio">
-                                            <label for="Radios2"> A Bathing Ape </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios3" value="declater" type="radio">
-                                            <label for="Radios3"> The Hundreds </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios4" value="declater" type="radio">
-                                            <label for="Radios4"> Alife </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios5" value="declater" type="radio">
-                                            <label for="Radios5"> Neighborhood </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios6" value="declater" type="radio">
-                                            <label for="Radios6"> CLOT </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios7" value="declater" type="radio">
-                                            <label for="Radios7"> Acapulco Gold </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios8" value="declater" type="radio">
-                                            <label for="Radios8"> UNDFTD </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios9" value="declater" type="radio">
-                                            <label for="Radios9"> Mighty Healthy </label>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="radio radio-danger">
-                                            <input name="survey" id="Radios10" value="declater" type="radio">
-                                            <label for="Radios10"> Fiberops </label>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- End Brands  -->
                     </div>
                 </div>
                 <!-- End Categories  -->
@@ -134,7 +63,15 @@
                     <div class="right-product-box">
                         <div class="product-item-filter row">
                             <div class="col-12 col-sm-8 text-left text-sm-left">
-                                <p> نمایش همه ی {{ products.count }} نتیجه </p>
+                                <div class="toolbar-sorter-right">
+                                    <span>Sort by </span>
+                                    <select id="basic" class="selectpicker show-tick form-control" data-placeholder="$ USD">
+                                        <option data-display="Select">هیچ</option>
+                                        <option value="1" id="low_to_high_price"><a href="{% url 'low_to_high_price' category.slug %}">از قیمت کم به زیاد</a></option>
+                                        <option value="2" id="high_to_low_price"><a href="{% url 'high_to_low_price' category.slug %}">از قیمت زیاد به کم</a></option>
+                                    </select>
+                                </div>
+                                <p> نمایش همه ی {{ products|length }} نتیجه </p>
                             </div>
                             <div class="col-12 col-sm-4 text-center text-sm-right">
                                 <ul class="nav nav-tabs ml-auto">
@@ -160,19 +97,19 @@
                                                             <div class="type-lb">
                                                                 <p class="sale">جدید</p>
                                                             </div>
-                                                            <img src="{{ product.image.url }}" class="img-fluid" alt="Image">
+                                                            <img src="{{ product.0.image.url }}" class="img-fluid" alt="Image">
                                                             <div class="mask-icon">
                                                                 <ul>
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
                                                                 </ul>
-                                                                <a class="cart" href="#">اضافه کردن به سبد خرید</a>
+                                                                <a class="cart" href="{% url 'shop_product' product.0.slug %}">فروشگاه های عرضه کننده</a>
                                                             </div>
                                                         </div>
                                                         <div class="why-text">
-                                                            <h4><a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a></h4>
-{#                                                            <h5>gheymat ro chetor bezanim</h5>#}
+                                                            <h4><a href="{% url 'product_detail' product.0.slug %}">{{ product.0.name }}</a></h4>
+                                                            <h5>{{ product.1 }}<span>تومان</span></h5>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -190,7 +127,7 @@
                                                             <div class="type-lb">
                                                                 <p class="new">جدید</p>
                                                             </div>
-                                                            <img src="{{ product.image.url }}" class="img-fluid" alt="Image">
+                                                            <img src="{{ product.0.image.url }}" class="img-fluid" alt="Image">
                                                             <div class="mask-icon">
                                                                 <ul>
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i class="fas fa-eye"></i></a></li>
@@ -204,18 +141,18 @@
                                                 </div>
                                                 <div class="col-sm-6 col-md-6 col-lg-8 col-xl-8">
                                                     <div class="why-text full-width">
-                                                        <h4>{{ product.name }}</h4>
+                                                        <h4><a href="{% url 'product_detail' product.0.slug %}" class="text-black">{{ product.0.name }}</a></h4>
 {#                                                        {% if product.shop_product.all.price.min ==  product.shop_product.all.price.max %}#}
                                                             <h5>
-                                                                {% for shopproduct in product.shop_product.all %}
+                                                                {% for shopproduct in product.0.shop_product.all %}
                                                                     <span> {{ shopproduct.price }}$, </span>
                                                                 {% endfor %}
                                                             </h5>
 {#                                                        {% else %}#}
 {#                                                            <h5>from {{ product.shop_product.all.price.min }}$ to {{ product.shop_product.all.price.max }}$</h5>#}
 {#                                                        {% endif %}#}
-                                                        <p>{{ product.detail }}</p>
-                                                        <a class="btn hvr-hover" href="#">اضافه کردن به سبد خرید</a>
+                                                        <p>{{ product.0.detail }}</p>
+                                                        <a class="btn hvr-hover" href="{% url 'shop_product' product.0.slug %}">فروشگاه های عرضه کننده</a>
                                                     </div>
                                                 </div>
                                             </div>

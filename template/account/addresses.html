@@ -1,0 +1,98 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Addresses</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active">Addresses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+    <!-- Start Wishlist  -->
+    <div class="wishlist-box-main">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-main table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>City</th>
+                                    <th>Street</th>
+                                    <th>Alley</th>
+                                    <th>Zipcode</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for address in addresses %}
+                                    <tr id="address{{ address.id }}">
+                                        <td class="quantity-box">{{ address.id }}</td>
+                                        <td class="name-pr">{{ address.city }}</td>
+                                        <td class="name-pr">{{ address.street }}</td>
+                                        <td class="name-pr">{{ address.alley }}</td>
+                                        <td class="quantity-box">{{ address.zip_code }}</td>
+                                        <td class="remove-pr"><a onclick="clear_address({{ address.id }})" style="cursor: pointer"><i class="fas fa-trash"></i></a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6 col-lg-6 mb-3">
+                    <h3><a data-toggle="collapse" href="#formRegister" role="button" aria-expanded="false">Add New Address</a></h3>
+                    <form method="post" action="{% url 'create_address' %}" class="mt-3 collapse review-form-box" id="formRegister">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="id_city" class="mb-0 text-dark">City</label>
+                                <input type="text" class="form-control" id="id_city" name="city" placeholder="City"> </div>
+                            <div class="form-group col-md-6">
+                                <label for="id_street" class="mb-0 text-dark">Street</label>
+                                <input type="text" class="form-control" id="id_street" name="street" placeholder="Street"> </div>
+                            <div class="form-group col-md-6">
+                                <label for="id_alley" class="mb-0 text-dark">Alley</label>
+                                <input type="text" class="form-control" id="id_alley" name="alley" placeholder="Alley"> </div>
+                            <div class="form-group col-md-6">
+                                <label for="id_zip_code" class="mb-0 text-dark">Zip code</label>
+                                <input type="text" class="form-control" id="id_zip_code" name="zip_code" placeholder="Zip code"> </div>
+                        </div>
+                        <button type="submit" class="btn hvr-hover">Do it</button>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- End Wishlist -->
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        function clear_address(address_id) {
+            const data = JSON.stringify({address_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_address' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#address${data.address_id}`).remove()
+                },
+            });
+        }
+    </script>
+{% endblock %}

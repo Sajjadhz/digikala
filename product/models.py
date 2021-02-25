@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -40,6 +42,7 @@ class Product(models.Model):
     image = models.ImageField(_('Image'), unique=True)
     slug = models.SlugField(_('Slug'))
     detail = models.TextField(_('Detail'))
+    date_created = models.DateTimeField(_("Create at"), auto_now_add=True)
 
     @property
     def like_count(self):

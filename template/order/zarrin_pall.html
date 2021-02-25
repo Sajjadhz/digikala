@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Start All Title Box -->
+    <div class="all-title-box">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Cart</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active">Cart</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End All Title Box -->
+
+    <!-- Start Cart  -->
+    <div class="cart-box-main">
+        <div class="container">
+            <div class="row my-5">
+                <div class="col-lg-4 col-sm-12">
+                    <div class="order-box">
+                        <div class="d-flex gr-total">
+                            <h5>Grand Total</h5>
+                            <div class="ml-auto h5">تومان<span id="final_total">{{ order.total_price }}</span></div>
+                        </div>
+                        <hr> </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2 d-flex shopping-box"><a href="#" class="ml-auto btn hvr-hover">پرداخت در محل</a> </div>
+                <div class="col-2 d-flex shopping-box"><a href="#" class="ml-auto btn hvr-hover">درگاه بانک</a> </div>
+            </div>
+
+
+        </div>
+    </div>
+    <!-- End Cart -->
+{% endblock %}
+{% block javascript %}
+    <script>
+        function clear_basket_item(basket_item_id) {
+            const data = JSON.stringify({basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'remove_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#basket_item${data.basket_item_id}`).remove()
+                    $('#basket_item_count').text(`${data.basket_item_count}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                    $(`#final_total`).text(`${data.basket_total_price}`)
+                    $(`#cart_basket_item${ data.basket_item_id }`).remove()
+                },
+            });
+        }
+    </script>
+    <script>
+        function update_quantity_of_basket_items(mode, basket_item_id) {
+            const data = JSON.stringify({mode, basket_item_id})
+            $.ajax({
+                type: "post",
+                url: '{% url 'update_basket_item' %}',
+                data: data,
+                success: function (response) {
+                    console.log(response)
+                    const data = JSON.parse(response)
+                    $(`#order_items_quantity${data.basket_item_id}`).text(`${data.basket_item_quantity}`)
+                    $(`#basket_item_quantity${data.basket_item_id}`).text(`${data.basket_item_quantity}`)
+                    $('#basket_total_price').text(`${data.basket_total_price}`)
+                    $(`#cart_basket_item_total${ data.basket_item_id }`).text(`${data.basket_item_total_price}`)
+                    $(`#final_total`).text(`${data.basket_total_price}`)
+
+                },
+            });
+        }
+    </script>
+{% endblock %}

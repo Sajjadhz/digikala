@@ -58,7 +58,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         ),
     )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -74,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Address(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='address', related_query_name='address', )
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='addresses', related_query_name='addresses',)
     city = models.CharField(_('City'), max_length=30)
     street = models.CharField(_('Street'), max_length=50)
     alley = models.CharField(_('Alley'), max_length=30)

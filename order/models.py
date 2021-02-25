@@ -12,7 +12,8 @@ class Order(models.Model):
     created_at = models.DateTimeField(_('Created at:'), auto_now_add=True)
     updated_at = models.DateTimeField(_('Updated at'), auto_now=True)
     description = models.TextField(_('Description'), null=True, blank=True)
-    draft = models.IntegerField(_('Draft'), default=True)
+    draft = models.BooleanField(_('Draft'), default=True)
+    total_price = models.IntegerField(_('TotalPrice'), default=0)
 
     def __str__(self):
         return self.user.first_name
@@ -60,9 +61,10 @@ class BasketItem(models.Model):
     basket = models.ForeignKey(Basket, verbose_name=_('Basket'), on_delete=models.SET_NULL, related_name="basket_items",
                                related_query_name="basket_items", null=True, blank=True)
     shop_product = models.ForeignKey('product.ShopProduct', verbose_name=_('Shop Product'), on_delete=models.SET_NULL,
-                                     null=True, blank=True)
+                                     null=True, blank=True, related_name="basket_item", related_query_name="basket_item")
     quantity = models.IntegerField(_('quantity'), null=True, blank=True)
     price = models.IntegerField(_('Price'), null=True, blank=True)
     total = models.IntegerField(_('Total'), null=True, blank=True)
+
     def __str__(self):
         return self.basket.user.first_name

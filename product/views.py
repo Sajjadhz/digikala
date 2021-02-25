@@ -24,7 +24,8 @@ class SubCategoryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
-        context['products'] = Product.objects.filter(category=kwargs['object'])
+        context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object'])))
+        print('products', context['products'])
         context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
         # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
@@ -41,6 +42,11 @@ class SubCategoryDetailView(DetailView):
         for basket_item in basket_items:
             total_price += basket_item.total
         return total_price
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
 
 
 class CategoryDetailView(DetailView):
@@ -64,6 +70,112 @@ class CategoryDetailView(DetailView):
         for basket_item in basket_items:
             total_price += basket_item.total
         return total_price
+
+
+class SearchView(DetailView):
+    model = Category
+    template_name = "product/sub_category.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print('kwargs : ', kwargs)
+        context['category'] = Category.objects.get(slug=self.kwargs['slug'])
+        context['products'] = self.get_queryset_of_search()
+        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
+        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
+        #     [item.price for item in context['shop_products']])
+        context['categories'] = Category.objects.all()
+        basket = Basket.objects.get(user=self.request.user)
+        basket.total_price = self.get_basket_total_price(context['basket_items'])
+        basket.save()
+        context['basket'] = basket
+        return context
+
+    def get_queryset_of_search(self):
+        result = super(SearchView, self).get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            product_result = list(map(self.get_min_price, Product.objects.filter(Q(category__name=query))))
+            result = product_result
+        else:
+            result = None
+        return result
+
+    def get_basket_total_price(self, basket_items):
+        total_price = 0
+        for basket_item in basket_items:
+            total_price += basket_item.total
+        return total_price
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
+
+
+class LowToHighPriceView(DetailView):
+    model = Category
+    template_name = "product/sub_category.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.get(slug=self.kwargs['slug'])
+        context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
+        print('products', context['products'])
+        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
+        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
+        #     [item.price for item in context['shop_products']])
+        context['categories'] = Category.objects.all()
+        basket = Basket.objects.get(user=self.request.user)
+        basket.total_price = self.get_basket_total_price(context['basket_items'])
+        basket.save()
+        context['basket'] = basket
+        return context
+
+    def get_basket_total_price(self, basket_items):
+        total_price = 0
+        for basket_item in basket_items:
+            total_price += basket_item.total
+        return total_price
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
+
+
+class HighToLowPriceView(DetailView):
+    model = Category
+    template_name = "product/sub_category.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.get(slug=self.kwargs['slug'])
+        context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
+        print('products', context['products'])
+        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
+        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
+        #     [item.price for item in context['shop_products']])
+        context['categories'] = Category.objects.all()
+        basket = Basket.objects.get(user=self.request.user)
+        basket.total_price = self.get_basket_total_price(context['basket_items'])
+        basket.save()
+        context['basket'] = basket
+        return context
+
+    def get_basket_total_price(self, basket_items):
+        total_price = 0
+        for basket_item in basket_items:
+            total_price += basket_item.total
+        return total_price
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
 
 
 class ProductDetailView(FormMixin, DetailView):
@@ -182,9 +294,7 @@ class ShopProductView(FormMixin, DetailView):
         context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
         context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         context['categories'] = Category.objects.all()
-        context['quantity'] = 0
-        for i in context['shop_products']:
-            context['quantity'] += i.quantity
+        context['quantity'] = self.get_quatity_of_shop_product(context['shop_products'])
         basket = Basket.objects.get(user=self.request.user)
         basket.total_price = self.get_basket_total_price(context['basket_items'])
         basket.save()
@@ -196,3 +306,10 @@ class ShopProductView(FormMixin, DetailView):
         for basket_item in basket_items:
             total_price += basket_item.total
         return total_price
+
+    def get_quatity_of_shop_product(self, shop_products):
+        quantity = 0
+        for i in shop_products:
+            quantity += i.quantity
+        return quantity
+

@@ -2,6 +2,7 @@ from django import forms
 from django.core.validators import validate_email
 from django.utils.translation import ugettext_lazy as _
 
+from account.models import Address, User
 from account.validators import validate_passwords, validate_password, validate_email_login, validate_email_as_username
 
 
@@ -52,3 +53,15 @@ class UserLoginForm(forms.Form):
         password = self.cleaned_data.get('password', None)
         validate_password(password)
         return password
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ('city', 'street', 'alley', 'zip_code')
+
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('image', )
