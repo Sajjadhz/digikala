@@ -15,9 +15,9 @@ from django.contrib.auth.views import LogoutView
 #     success_url = '/'
 import product
 from account.forms import UserRegistrationForm, UserLoginForm, AddressForm, ImageForm
-from account.models import User, Address
+from account.models import User, Address, Shop
 from order.models import BasketItem, Basket, Order
-from product.models import Category
+from product.models import Category, Product
 
 
 def login_view(request):
@@ -132,6 +132,58 @@ class OrdersView(TemplateView):
         context['basket'] = Basket.objects.get(user=self.request.user)
         context['orders'] = Order.objects.filter(user=self.request.user)
         return context
+
+
+class ShopDetailView(DetailView):
+    model = Shop
+    template_name = "account/shop_detail.html"
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = list(map(self.get_min_price, Product.objects.filter(shop_product__shop__slug=self.kwargs['slug'])))
+        context['shop'] = Shop.objects.get(slug=self.kwargs['slug'])
+        context['categories'] = Category.objects.all()
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
+        return context
+
+    def get_basket_total_price(self, basket_items):
+        total_price = 0
+        for basket_item in basket_items:
+            total_price += basket_item.total
+        return total_price
+
+    def get_quatity_of_shop_product(self, shop_products):
+        quantity = 0
+        for i in shop_products:
+            quantity += i.quantity
+        return quantity
+
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.get(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.get(user=self.request.user.is_anonymous):
+            basket = Basket.objects.get(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
 
 
 @csrf_exempt

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import login_view, RegisterView, register_view, logout_view, LogoutView, ProfileView, AddressView, \
-    remove_address, FullNameView, create_address, change_image, OrdersView
+    remove_address, FullNameView, create_address, change_image, OrdersView, ShopDetailView
 
 urlpatterns = [
     path('login/', login_view, name='login'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('remove_address/', remove_address, name='remove_address'),
     path('create_address/', create_address, name='create_address'),
     path('change_image/', change_image, name='change_image'),
+    path('shop_detail/<slug:slug>/', ShopDetailView.as_view(), name='shop_detail'),
 ]

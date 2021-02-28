@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +16,6 @@
     <meta name="author" content="">
 
     <!-- Site Icons -->
-
     <link rel="shortcut icon" href="{% static  'img/favicon.ico' %}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{% static  'img/apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'css/all.css' %}">
@@ -35,36 +35,36 @@
      <script src="{%  static 'js/respond.min.js' %}"></script>
     <![endif]-->
     {% block header %}
-    
+
     {% endblock %}
 </head>
 <body>
-    {% include 'base/header.html' %}
-    {% block content %}
+{% include 'base/header.html' %}
+{% block content %}
 
-    {% endblock %}
-    {% include 'base/footer.html' %}
-    <!-- ALL JS FILES -->
-    <script src="{% static 'js/jquery-3.2.1.min.js'%}"></script>
-    <script src="{% static 'js/popper.min.js'%}"></script>
-    <script src="{% static 'js/bootstrap.min.js'%}"></script>
+{% endblock %}
+{% include 'base/footer.html' %}
+<!-- ALL JS FILES -->
+<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
 {#    <script src="{% static 'js/bootstrap.min.js.map'%}"></script>#}
-    <!-- ALL PLUGINS -->
-    <script src="{% static 'js/jquery.superslides.min.js'%}"></script>
-    <script src="{% static 'js/bootstrap-select.js'%}"></script>
-    <script src="{% static 'js/inewsticker.js'%}"></script>
-    <script src="{% static 'js/bootsnav.js' %}"></script>
-    <script src="{% static 'js/images-loded.min.js'%}"></script>
-    <script src="{% static 'js/isotope.min.js'%}"></script>
-    <script src="{% static 'js/owl.carousel.min.js'%}"></script>
-    <script src="{% static 'js/baguetteBox.min.js'%}"></script>
-    <script src="{% static 'js/jquery-ui.js'%}"></script>
-    <script src="{% static 'js/jquery.nicescroll.min.js'%}"></script>
-    <script src="{% static 'js/form-validator.min.js'%}"></script>
-    <script src="{% static 'js/contact-form-script.js'%}"></script>
-    <script src="{% static 'js/custom.js'%}"></script>
-    {% block javascript %}
+<!-- ALL PLUGINS -->
+<script src="{% static 'js/jquery.superslides.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-select.js' %}"></script>
+<script src="{% static 'js/inewsticker.js' %}"></script>
+<script src="{% static 'js/bootsnav.js' %}"></script>
+<script src="{% static 'js/images-loded.min.js' %}"></script>
+<script src="{% static 'js/isotope.min.js' %}"></script>
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'js/baguetteBox.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.js' %}"></script>
+<script src="{% static 'js/jquery.nicescroll.min.js' %}"></script>
+<script src="{% static 'js/form-validator.min.js' %}"></script>
+<script src="{% static 'js/contact-form-script.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+{% block javascript %}
 
-    {% endblock %}
+{% endblock %}
 </body>
 </html>

@@ -7,28 +7,16 @@
                         <div id="offer-box" class="carouselTicker">
                             <ul class="offer-box">
                                 <li>
-                                    <i class="fab fa-opencart"></i> Off 10%! Shop Now Man
+                                    <i class="fab fa-opencart"></i> مگر کیفیت برای شما مهم نیست؟
                                 </li>
                                 <li>
-                                    <i class="fab fa-opencart"></i> 50% - 80% off on Fashion
+                                    <i class="fab fa-opencart"></i> پس با ما همراه باشید
                                 </li>
                                 <li>
-                                    <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
+                                    <i class="fab fa-opencart"></i> هر روز هفته با همسایه
                                 </li>
                                 <li>
-                                    <i class="fab fa-opencart"></i> Off 50%! Shop Now
-                                </li>
-                                <li>
-                                    <i class="fab fa-opencart"></i> Off 10%! Shop Now Man
-                                </li>
-                                <li>
-                                    <i class="fab fa-opencart"></i> 50% - 80% off on Fashion
-                                </li>
-                                <li>
-                                    <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
-                                </li>
-                                <li>
-                                    <i class="fab fa-opencart"></i> Off 50%! Shop Now
+                                    <i class="fab fa-opencart"></i> خرید ایترنتی کاری مهم در مهار کرونا
                                 </li>
                             </ul>
                         </div>
@@ -71,7 +59,7 @@
                 <div class="collapse navbar-collapse" id="navbar-menu">
                     <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                         {% if user.is_authenticated %}
-                            <li class="nav-item active d-flex align-items-center"><a class="nav-link border-secondary bg-info rounded h-25" href="#"><p>{{ user.first_name }}  {{ user.last_name }}</p></a></li>
+                            <li class="nav-item active"><a class="nav-link border-secondary  rounded " href="{% url 'profile' %}"><p>{{ user.first_name }}  {{ user.last_name }}</p></a></li>
                             <li class="nav-item active"><a class="nav-link" href="{% url 'logout' %}">خروج</a></li>
                         {% else %}
                              <li class="nav-item active"><a class="nav-link" href="{% url 'login' %}">ورود</a></li>
@@ -119,7 +107,7 @@
                 <!-- Start Attribute Navigation -->
                 <div class="attr-nav">
                     <ul>
-                        <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
+{#                        <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>#}
                         <li class="side-menu"><a href="#">
 						<i class="fa fa-shopping-bag"></i>
                             <span class="badge text-danger" id="basket_item_count">{{ basket_items.count }}</span>
@@ -128,7 +116,6 @@
                 </div>
                 <!-- End Attribute Navigation -->
             </div>
-        {% if user.is_authenticated %}
             <!-- Start Side Menu -->
                 <div class="side">
                     <a href="#" class="close-side"><i class="fa fa-times"></i></a>
@@ -142,26 +129,29 @@
                             {% endfor %}
                         </ul>
                         <li class="total bg-white">
-                            <a href="{% url 'cart' %}" class="btn btn-default hvr-hover btn-cart">سبد خرید</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'cart' %}" class="btn btn-default hvr-hover btn-cart">سبد خرید</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-default hvr-hover btn-cart">سبد خرید</a>
+                            {% endif %}
                             <span class="float-right"><strong>Total</strong> :تومان<span id="basket_total_price">{{ basket.total_price }}</span></span>
                         </li>
                     </li>
                 </div>
             <!-- End Side Menu -->
-        {% endif %}
         </nav>
         <!-- End Navigation -->
     </header>
     <!-- End Main Top -->
 
     <!-- Start Top Search -->
-    <div class="top-search">
-        <div class="container">
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                <input type="text" class="form-control" placeholder="Search">
-                <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
-            </div>
-        </div>
-    </div>
+{#    <div class="top-search">#}
+{#        <div class="container">#}
+{#            <div class="input-group">#}
+{#                <span class="input-group-addon"><i class="fa fa-search"></i></span>#}
+{#                <input type="text" class="form-control" placeholder="Search">#}
+{#                <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
     <!-- End Top Search -->

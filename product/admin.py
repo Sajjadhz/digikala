@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
 from order.admin import BasketItemsInline, OrderItemsInline
-from product.models import Category, Product, ShopProduct, ProductImage, Comment, Like, ProductMeta, Brand, \
+from product.models import Category, Product, ShopProduct, ProductImage, Comment, ProductLike, ProductMeta, Brand, \
     ProductSingleSetting, CommentLike
 
 User = get_user_model()  # give user as object not like setting.AUTH_USER_MODEL give string
@@ -61,8 +61,8 @@ class ProductSingleSettingInline(admin.TabularInline):
     show_change_link = True
 
 
-class LikeInline(admin.TabularInline):
-    model = Like
+class ProductLikeInline(admin.TabularInline):
+    model = ProductLike
     extra = 2
     field = ('product', 'user')
     show_change_link = True
@@ -93,7 +93,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'brand', 'slug', 'detail')
     search_fields = ('name', 'brand', 'category')
     list_filter = ('brand', 'category')
-    inlines = [ProductMetaInline, ShopProductInline, ProductImageInline, CommentInline, LikeInline,
+    inlines = [ProductMetaInline, ShopProductInline, ProductImageInline, CommentInline, ProductLikeInline,
                ProductSingleSettingInline]
 
 
@@ -129,7 +129,7 @@ class CommentAdmin(admin.ModelAdmin):
     inlines = [CommentLikeInline]
 
 
-class LikeAdmin(admin.ModelAdmin):
+class ProductLikeAdmin(admin.ModelAdmin):
     list_display = ('product', 'user')
     search_fields = ('product', 'user')
     list_filter = ('product', 'user')
@@ -142,7 +142,7 @@ class CommentLikeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Like, LikeAdmin)
+admin.site.register(ProductLike, ProductLikeAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(ProductImage, ProductImageAdmin)
 admin.site.register(ShopProduct, ShopProductAdmin)

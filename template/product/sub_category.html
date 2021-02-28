@@ -104,7 +104,7 @@
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
                                                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
                                                                 </ul>
-                                                                <a class="cart" href="{% url 'shop_product' product.0.slug %}">فروشگاه های عرضه کننده</a>
+                                                                <a class="cart" href="{% url 'product_detail' product.0.slug %}">صفحه کالا</a>
                                                             </div>
                                                         </div>
                                                         <div class="why-text">
@@ -152,7 +152,7 @@
 {#                                                            <h5>from {{ product.shop_product.all.price.min }}$ to {{ product.shop_product.all.price.max }}$</h5>#}
 {#                                                        {% endif %}#}
                                                         <p>{{ product.0.detail }}</p>
-                                                        <a class="btn hvr-hover" href="{% url 'shop_product' product.0.slug %}">فروشگاه های عرضه کننده</a>
+                                                        <a class="btn hvr-hover" href="{% url 'product_detail' product.0.slug %}">صفحه کالا</a>
                                                     </div>
                                                 </div>
                                             </div>

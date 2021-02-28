@@ -11,7 +11,7 @@ from django.views.generic.edit import FormMixin
 
 from order.models import BasketItem, Basket
 from product.forms import CommentForm
-from product.models import Category, Product, ProductImage, ShopProduct, Comment, CommentLike
+from product.models import Category, Product, ProductImage, ShopProduct, Comment, CommentLike, ProductLike
 
 
 # Create your views here.
@@ -25,16 +25,9 @@ class SubCategoryDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object'])))
-        print('products', context['products'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
-        #     [item.price for item in context['shop_products']])
         context['categories'] = Category.objects.all()
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -48,6 +41,26 @@ class SubCategoryDetailView(DetailView):
         print("min_price : ", min_price)
         return [product, min_price]
 
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.get(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.get(user=self.request.user.is_anonymous):
+            basket = Basket.objects.get(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+
 
 class CategoryDetailView(DetailView):
     model = Category
@@ -57,12 +70,9 @@ class CategoryDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['child_categories'] = Category.objects.filter(parent=context['category'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         context['categories'] = Category.objects.all()
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -70,6 +80,26 @@ class CategoryDetailView(DetailView):
         for basket_item in basket_items:
             total_price += basket_item.total
         return total_price
+
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.get(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.get(user=self.request.user.is_anonymous):
+            basket = Basket.objects.get(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
 
 
 class SearchView(DetailView):
@@ -81,15 +111,9 @@ class SearchView(DetailView):
         print('kwargs : ', kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = self.get_queryset_of_search()
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
-        #     [item.price for item in context['shop_products']])
         context['categories'] = Category.objects.all()
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_queryset_of_search(self):
@@ -113,6 +137,26 @@ class SearchView(DetailView):
         print("min_price : ", min_price)
         return [product, min_price]
 
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.filter(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.filter(user=self.request.user.is_anonymous):
+            basket = Basket.objects.filter(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+
 
 class LowToHighPriceView(DetailView):
     model = Category
@@ -122,16 +166,9 @@ class LowToHighPriceView(DetailView):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
-        print('products', context['products'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
-        #     [item.price for item in context['shop_products']])
         context['categories'] = Category.objects.all()
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -144,6 +181,26 @@ class LowToHighPriceView(DetailView):
         min_price = min(item.price for item in product.shop_product.all())
         print("min_price : ", min_price)
         return [product, min_price]
+
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.filter(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.filter(user=self.request.user.is_anonymous):
+            basket = Basket.objects.filter(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
 
 
 class HighToLowPriceView(DetailView):
@@ -154,16 +211,9 @@ class HighToLowPriceView(DetailView):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
-        print('products', context['products'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        # context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        # context['average_shop_products'] = sum(item.price for item in context['shop_products']) / len(
-        #     [item.price for item in context['shop_products']])
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         context['categories'] = Category.objects.all()
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -176,6 +226,24 @@ class HighToLowPriceView(DetailView):
         min_price = min(item.price for item in product.shop_product.all())
         print("min_price : ", min_price)
         return [product, min_price]
+
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.filter(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.filter(user=self.request.user.is_anonymous):
+            basket = Basket.objects.filter(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            return [basket, basket_items]
 
 
 class ProductDetailView(FormMixin, DetailView):
@@ -188,23 +256,23 @@ class ProductDetailView(FormMixin, DetailView):
         context['product'] = Product.objects.get(slug=self.kwargs['slug'])
         context['product_images'] = ProductImage.objects.filter(product=kwargs['object'])
         context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         context['min_shop_products'] = min(item.price for item in context['shop_products'])
         context['max_shop_products'] = max(item.price for item in context['shop_products'])
-        context['category_products'] = Product.objects.filter(category=context['product'].category). \
-            filter(~Q(slug=self.kwargs['slug']))
+        context['category_products'] = list(
+            map(self.get_min_price, Product.objects.filter(category__slug=context['product'].category.slug)))
+        print('category_products', context['category_products'])
         context['settings'] = Product.objects.select_related('product_single_setting').get(
             slug=self.kwargs['slug']).product_single_setting
         context['comments'] = Comment.objects.filter(is_confirmed=True)
         context['categories'] = Category.objects.all()
         context['form'] = CommentForm()
+        context['product_likes'] = ProductLike.objects.filter(product__id=context['product'].id).count()
+        context['product_like_user'] = self.get_product_like_user(context['product'])
         context['quantity'] = 0
         for i in context['shop_products']:
             context['quantity'] += i.quantity
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
+        context['basket'] = self.get_basket_basket_items()[0]
+        context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -239,6 +307,40 @@ class ProductDetailView(FormMixin, DetailView):
         form.instance.author = self.request.user
         form.instance.product = Product.objects.get(slug=self.object.slug)
         form.save()
+        return form
+
+    def get_basket_basket_items(self):
+        if self.request.user.is_authenticated:
+            basket = Basket.objects.get(user=self.request.user)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        elif Basket.objects.get(user=self.request.user.is_anonymous):
+            basket = Basket.objects.get(user=self.request.user.is_anonymous)
+            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+        else:
+            basket = Basket.objects.create(user=self.request.user.is_anonymous)
+            basket_items = []
+            basket.total_price = self.get_basket_total_price(basket_items)
+            basket.save()
+            return [basket, basket_items]
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
+
+    def get_product_like_user(self, product):
+        if self.request.user.is_authenticated:
+            product_like_user = ProductLike.objects.filter(product__id=product.id,
+                                                           user=self.request.user, condition=True)
+            return product_like_user
+        else:
+            return True
 
 
 @csrf_exempt
@@ -283,33 +385,24 @@ def like_comment(request):
     return HttpResponse(json.dumps(response), status=201)
 
 
-class ShopProductView(FormMixin, DetailView):
-    model = Product
-    template_name = "product/shop_product.html"
-    form_class = CommentForm
+@csrf_exempt
+def like_product(request):
+    data = json.loads(request.body)
+    print(data)
+    user = request.user
+    try:
+        product = Product.objects.get(id=data['product_id'])
+    except Product.DoesNotExist:
+        return HttpResponse('bad request', status=404)
+    try:
+        product_like = ProductLike.objects.get(user=user, product=product)
+        product_like.condition = data['condition']
+        product_like.save()
+    except ProductLike.DoesNotExist:
+        ProductLike.objects.create(user=user, product=product, condition=data['condition'])
+    response = {"like_count": product.like_count}
+    print(response)
+    return redirect('product_detail', slug=product.slug)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['product'] = Product.objects.get(slug=self.kwargs['slug'])
-        context['shop_products'] = ShopProduct.objects.filter(product=kwargs['object'])
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        context['categories'] = Category.objects.all()
-        context['quantity'] = self.get_quatity_of_shop_product(context['shop_products'])
-        basket = Basket.objects.get(user=self.request.user)
-        basket.total_price = self.get_basket_total_price(context['basket_items'])
-        basket.save()
-        context['basket'] = basket
-        return context
 
-    def get_basket_total_price(self, basket_items):
-        total_price = 0
-        for basket_item in basket_items:
-            total_price += basket_item.total
-        return total_price
-
-    def get_quatity_of_shop_product(self, shop_products):
-        quantity = 0
-        for i in shop_products:
-            quantity += i.quantity
-        return quantity
 

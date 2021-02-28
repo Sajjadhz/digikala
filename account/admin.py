@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
 from order.admin import OrderInline, PaymentInline, BasketInline
-from product.admin import ShopProductInline, CommentInline, LikeInline
+from product.admin import ShopProductInline, CommentInline, ProductLikeInline
 from .models import User, Address, Shop, Email
 
 
@@ -59,7 +59,7 @@ class UserAdmin(BaseUserAdmin):
     )
     ordering = ['email', ]
     inlines = [AddressInline, ShopInline, OrderInline, PaymentInline, BasketInline, EmailInline, CommentInline,
-               LikeInline]
+               ProductLikeInline]
 
 
 class AddressAdmin(admin.ModelAdmin):

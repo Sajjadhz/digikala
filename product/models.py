@@ -46,12 +46,12 @@ class Product(models.Model):
 
     @property
     def like_count(self):
-        q = Like.objects.filter(product=self, condition=True)
+        q = ProductLike.objects.filter(product=self, condition=True)
         return q.count()
 
     @property
     def dislike_count(self):
-        q = Like.objects.filter(product=self, condition=False)
+        q = ProductLike.objects.filter(product=self, condition=False)
         return q.count()
 
     def __str__(self):
@@ -157,10 +157,18 @@ class CommentLike(models.Model):
         return str(self.condition)
 
 
-class Like(models.Model):
-    user = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name="like", related_query_name="like")
+class ProductLike(models.Model):
+    user = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name="product_like", related_query_name="product_like")
     product = models.ForeignKey('Product', verbose_name=_(
-        "Products"), on_delete=models.CASCADE, related_name="like", related_query_name="like")
+        "Products"), on_delete=models.CASCADE, related_name="product_like", related_query_name="product_like")
+    condition = models.BooleanField(_("Condition"), default=True)
+    create_at = models.DateTimeField(_("Create at"), auto_now_add=True)
+    update_at = models.DateTimeField(_("Update at"), auto_now=True)
+
+    class Meta:
+        verbose_name = _("CommentLike")
+        verbose_name_plural = _("CommentLikes")
+        unique_together = ('user', 'product',)
 
     def __str__(self):
         return self.product.name

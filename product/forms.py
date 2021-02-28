@@ -7,6 +7,6 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('content',)
-        labels = {'content': _('Comment')}
+        labels = {'content': _('افزودن دیدگاه')}
         help_texts = {'content': _('Enter your comment')}
-        widgets = {'content': forms.Textarea(attrs={'class': 'myfieldclass', 'placeholder': 'Enter your comment...'}), }
+        widgets = {'content': forms.Textarea(attrs={'class': 'myfieldclass', 'placeholder': 'دیدگاه خود را به اشتراک بگذارید'}), }

@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '_^g94726s@hgr!pr1&ymv3eyiosd&0g!m(8@_6s)zbtw#qo^h3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['185.239.104.192']
+ALLOWED_HOSTS = ['185.239.104.192', '127.0.0.1']
 AUTH_USER_MODEL = 'account.User'
 
 # Application definition
@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'product',
     'order',
     'siteview',
+    'bootstrapform',
+    'crispy_forms',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

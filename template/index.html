@@ -48,21 +48,21 @@
     <!-- Start Products  -->
     <div class="products-box">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="title-all text-center">
-                        <h1>Featured Products</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet lacus enim.</p>
-                    </div>
-                </div>
-            </div>
+{#            <div class="row">#}
+{#                <div class="col-lg-12">#}
+{#                    <div class="title-all text-center">#}
+{#                        <h1>Featured Products</h1>#}
+{#                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet lacus enim.</p>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
             <div class="row">
                 <div class="col-lg-12">
                     <div class="special-menu text-center">
                         <div class="button-group filter-button-group">
-                            <button class="active" data-filter="*">All</button>
-                            <button data-filter=".top-featured">Top featured</button>
-                            <button data-filter=".best-seller">Best seller</button>
+                            <button class="active" data-filter="*">همه</button>
+                            <button data-filter=".top-featured">محصولات برجسته</button>
+                            <button data-filter=".best-seller">پرفروش ترین ها</button>
                         </div>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                                         <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i class="fas fa-sync-alt"></i></a></li>
                                         <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
                                     </ul>
-                                    <a class="cart" href="{% url 'shop_product' product.0.slug %}">فروشگاه های عرضه کننده</a>
+                                    <a class="cart" href="{% url 'product_detail' product.0.slug %}">صفحه کالا</a>
                                 </div>
                             </div>
                             <div class="why-text">
@@ -113,8 +113,8 @@
 
     <!-- Start copyright  -->
     <div class="footer-copyright">
-        <p class="footer-company">All Rights Reserved. &copy; 2018 <a href="#">ThewayShop</a> Design By :
-            <a href="https://html.design/">html design</a></p>
+        <p class="footer-company"> <a href="#"><a href="https://html.design/">html design</a>:طراح همسایه</a>
+            <p>تمامی حقوق محوظ است</p></p>
     </div>
     <!-- End copyright  -->
 
