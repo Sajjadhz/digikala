@@ -15,8 +15,9 @@ class HomeView(TemplateView):
         context['slides'] = SlideShow.objects.all()
         context['categories'] = Category.objects.all()
         context['products'] = list(map(self.get_min_price, Product.objects.all()))
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_min_price(self, product):
