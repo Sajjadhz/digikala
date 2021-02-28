@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '_^g94726s@hgr!pr1&ymv3eyiosd&0g!m(8@_6s)zbtw#qo^h3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['185.239.104.192', '127.0.0.1']
 AUTH_USER_MODEL = 'account.User'
