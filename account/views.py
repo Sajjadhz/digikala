@@ -14,10 +14,10 @@ from django.contrib.auth.views import LogoutView
 #     form_class = ContactForm
 #     success_url = '/'
 import product
-from account.forms import UserRegistrationForm, UserLoginForm, AddressForm, ImageForm
+from account.forms import UserRegistrationForm, UserLoginForm, AddressForm, ImageForm, EditNameForm
 from account.models import User, Address, Shop
 from order.models import BasketItem, Basket, Order
-from product.models import Category, Product
+from product.models import Category, Product, Brand
 
 
 def login_view(request):
@@ -85,8 +85,10 @@ class ProfileView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['categories'] = Category.objects.all()
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        context['basket'] = Basket.objects.get(user=self.request.user)
+        context['brands'] = Brand.objects.all()
+        if self.request.user.is_authenticated:
+            context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+            context['basket'] = Basket.objects.get(user=self.request.user)
         return context
 
 
@@ -97,8 +99,12 @@ class FullNameView(TemplateView):
         context = super().get_context_data()
         context['user'] = self.request.user
         context['categories'] = Category.objects.all()
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
-        context['basket'] = Basket.objects.get(user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+            context['basket'] = Basket.objects.get(user=self.request.user)
+        context['brands'] = Brand.objects.all()
+        context['form'] = EditNameForm()
+        print('form : ', context['form'])
         return context
 
 
@@ -115,6 +121,7 @@ class AddressView(TemplateView):
         context['categories'] = Category.objects.all()
         context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         context['basket'] = Basket.objects.get(user=self.request.user)
+        context['brands'] = Brand.objects.all()
         return context
 
 
@@ -131,6 +138,7 @@ class OrdersView(TemplateView):
         context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         context['basket'] = Basket.objects.get(user=self.request.user)
         context['orders'] = Order.objects.filter(user=self.request.user)
+        context['brands'] = Brand.objects.all()
         return context
 
 
@@ -138,12 +146,13 @@ class ShopDetailView(DetailView):
     model = Shop
     template_name = "account/shop_detail.html"
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = list(map(self.get_min_price, Product.objects.filter(shop_product__shop__slug=self.kwargs['slug'])))
+        context['products'] = list(
+            map(self.get_min_price, Product.objects.filter(shop_product__shop__slug=self.kwargs['slug'])))
         context['shop'] = Shop.objects.get(slug=self.kwargs['slug'])
         context['categories'] = Category.objects.all()
+        context['brands'] = Brand.objects.all()
         context['basket'] = self.get_basket_basket_items()[0]
         context['basket_items'] = self.get_basket_basket_items()[1]
         return context
@@ -208,6 +217,20 @@ def create_address(request):
             address.save()
         print(address)
     return redirect('addresses')
+
+
+@csrf_exempt
+def create_name(request):
+    print('request : ', request)
+    if request.method == 'POST':
+        form = EditNameForm(request.POST)
+        print('form ; ', form)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.user = request.user
+            user.save()
+        print(user)
+    return redirect('fullname')
 
 
 @csrf_exempt

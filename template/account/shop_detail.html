@@ -9,7 +9,7 @@
                 <div class="col-lg-12">
                     <h2>{{ shop.name }}</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">خانه</a></li>
                         <li class="breadcrumb-item active">{{ shop.name }}</li>
                     </ul>
                 </div>
@@ -56,6 +56,30 @@
                                     {% endfor %}
                             </div>
                         </div>
+                        <!-- Start Brands  -->
+                        <div class="filter-brand-left">
+                            <div class="title-left">
+                                <h3>فیلتر</h3>
+                            </div>
+                            <div class="brand-box">
+                                <ul>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        {% for brand in brands %}
+                                            <li>
+                                                <div class="radio radio-danger">
+                                                    <input type="checkbox" name="brands"
+                                                           id="Radios{{ brand.id }}" value="{{ brand.name }}">
+                                                    <label for="Radios{{ brand.id }}"> {{ brand.name }} </label>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                        <input type="submit" value="فیلتر" class="bg-info">
+                                    </form>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- End Brands  -->
                     </div>
                 </div>
                 <!-- End Categories  -->
@@ -64,7 +88,7 @@
                         <div class="product-item-filter row">
                             <div class="col-12 col-sm-8 text-left text-sm-left">
                                 <div class="toolbar-sorter-right">
-                                    <span>Sort by </span>
+                                    <span>ترتیب نمایش</span>
                                     <select id="basic" class="selectpicker show-tick form-control" data-placeholder="$ USD">
                                         <option data-display="Select">هیچ</option>
                                         <option value="1" id="low_to_high_price"><a href="{% url 'low_to_high_price' shop.slug %}">از قیمت کم به زیاد</a></option>

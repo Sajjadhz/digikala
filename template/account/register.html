@@ -2,19 +2,6 @@
 {% load static %}
 {% block content %}
 <!-- Start All Title Box -->
-    <div class="all-title-box">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h2>Checkout</h2>
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active">Checkout</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- End All Title Box -->
 
     <!-- Start Cart  -->
@@ -22,8 +9,8 @@
         <div class="container">
             <div class="row new-account-login justify-content-center">
                 <div class="col-sm-6 col-lg-6 mb-3">
-                    <div class="title-left">
-                        <h3>Create New Account</h3>
+                    <div class="title-left text-center">
+                        <h3>ساخت حساب جدید</h3>
                     </div>
                     <form method="post" action="{% url 'register' %}" class="text-center">
                         {% csrf_token %}
@@ -41,7 +28,7 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
-                        <input type="submit" class="btn btn-primary"  value="register">
+                        <input type="submit" class="btn btn-primary"  value="ثبت نام">
                     </form>
                 </div>
             </div>

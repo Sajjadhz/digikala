@@ -4,14 +4,15 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import DetailView
+from django.views.generic import DetailView, TemplateView
 from django.db.models import Q
 from django.views.generic.edit import FormMixin
 
 from order.models import BasketItem, Basket
 from product.forms import CommentForm
-from product.models import Category, Product, ProductImage, ShopProduct, Comment, CommentLike, ProductLike
+from product.models import Category, Product, ProductImage, ShopProduct, Comment, CommentLike, ProductLike, Brand
 
 
 # Create your views here.
@@ -26,8 +27,10 @@ class SubCategoryDetailView(DetailView):
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object'])))
         context['categories'] = Category.objects.all()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        context['brands'] = Brand.objects.all()
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -42,24 +45,11 @@ class SubCategoryDetailView(DetailView):
         return [product, min_price]
 
     def get_basket_basket_items(self):
-        if self.request.user.is_authenticated:
-            basket = Basket.objects.get(user=self.request.user)
-            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        elif Basket.objects.get(user=self.request.user.is_anonymous):
-            basket = Basket.objects.get(user=self.request.user.is_anonymous)
-            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        else:
-            basket = Basket.objects.create(user=self.request.user.is_anonymous)
-            basket_items = []
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
+        basket = Basket.objects.get(user=self.request.user)
+        basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+        basket.total_price = self.get_basket_total_price(basket_items)
+        basket.save()
+        return [basket, basket_items]
 
 
 class CategoryDetailView(DetailView):
@@ -71,8 +61,10 @@ class CategoryDetailView(DetailView):
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['child_categories'] = Category.objects.filter(parent=context['category'])
         context['categories'] = Category.objects.all()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        context['brands'] = Brand.objects.all()
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -112,8 +104,10 @@ class SearchView(DetailView):
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = self.get_queryset_of_search()
         context['categories'] = Category.objects.all()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        context['brands'] = Brand.objects.all()
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_queryset_of_search(self):
@@ -139,20 +133,8 @@ class SearchView(DetailView):
 
     def get_basket_basket_items(self):
         if self.request.user.is_authenticated:
-            basket = Basket.objects.filter(user=self.request.user)
+            basket = Basket.objects.get(user=self.request.user)
             basket_items = BasketItem.objects.filter(basket__user=self.request.user)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        elif Basket.objects.filter(user=self.request.user.is_anonymous):
-            basket = Basket.objects.filter(user=self.request.user.is_anonymous)
-            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        else:
-            basket = Basket.objects.create(user=self.request.user.is_anonymous)
-            basket_items = []
             basket.total_price = self.get_basket_total_price(basket_items)
             basket.save()
             return [basket, basket_items]
@@ -167,8 +149,10 @@ class LowToHighPriceView(DetailView):
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
         context['categories'] = Category.objects.all()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        context['brands'] = Brand.objects.all()
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -210,9 +194,11 @@ class HighToLowPriceView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['slug'])
+        context['brands'] = Brand.objects.all()
         context['products'] = list(map(self.get_min_price, Product.objects.filter(category=kwargs['object']))).sort()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         context['categories'] = Category.objects.all()
         return context
 
@@ -266,13 +252,14 @@ class ProductDetailView(FormMixin, DetailView):
         context['comments'] = Comment.objects.filter(is_confirmed=True)
         context['categories'] = Category.objects.all()
         context['form'] = CommentForm()
-        context['product_likes'] = ProductLike.objects.filter(product__id=context['product'].id).count()
-        context['product_like_user'] = self.get_product_like_user(context['product'])
+        context['product_likes'] = ProductLike.objects.filter(product__id=context['product'].id, condition=True).count()
+        context['product_dislikes'] = ProductLike.objects.filter(product__id=context['product'].id, condition=False).count()
         context['quantity'] = 0
         for i in context['shop_products']:
             context['quantity'] += i.quantity
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -343,6 +330,60 @@ class ProductDetailView(FormMixin, DetailView):
             return True
 
 
+class BrandFilterView(TemplateView, generic.View):
+    template_name = "product/brand_filter.html"
+    extra_context = {}
+
+    def get_context_data(self, **kwargs):
+        print('salam : ', kwargs)
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        print('categories', context['categories'])
+        # context['products'] = products
+        # print('products', context['products'])
+        context['brands'] = Brand.objects.all()
+        print('brands', context['brands'])
+        context.update(self.extra_context)
+        print('extra_context', self.extra_context)
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
+        return context
+
+    def get_basket_total_price(self, basket_items):
+        total_price = 0
+        for basket_item in basket_items:
+            total_price += basket_item.total
+        return total_price
+
+    def get_min_price(self, product):
+        min_price = min(item.price for item in product.shop_product.all())
+        print("min_price : ", min_price)
+        return [product, min_price]
+
+    def get_basket_basket_items(self):
+        print('before : ')
+        basket = Basket.objects.get(user=self.request.user)
+        print('after : ')
+        basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+        basket.total_price = self.get_basket_total_price(basket_items)
+        basket.save()
+        return [basket, basket_items]
+
+    def get_products(self, brands):
+        products = []
+        for brand in brands:
+            products.append(Product.objects.filter(brand__name=brand))
+        return products
+
+    def post(self, request, *args, **kwargs):
+        brands = request.POST.getlist('brands')
+        print('brands_name', brands)
+        products = list(map(self.get_min_price, self.get_products(brands)))
+        print('products : ', products)
+        return True
+
+
 @csrf_exempt
 def create_comment(request):
     print("request : ", request)
@@ -400,9 +441,6 @@ def like_product(request):
         product_like.save()
     except ProductLike.DoesNotExist:
         ProductLike.objects.create(user=user, product=product, condition=data['condition'])
-    response = {"like_count": product.like_count}
+    response = {"like_count": product.like_count, "dislike_count": product.dislike_count}
     print(response)
-    return redirect('product_detail', slug=product.slug)
-
-
-
+    return HttpResponse(json.dumps(response), status=201)

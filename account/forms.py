@@ -7,11 +7,13 @@ from account.validators import validate_passwords, validate_password, validate_e
 
 
 class UserRegistrationForm(forms.Form):
-    email = forms.EmailField(label=_('ایمیل'), required=True, help_text=_('ایمیلتون رو وارد کنید'),widget=forms.TextInput(
-        attrs={"placeholder": "Password", "class": "no-background border-secondary rounded"}))
+    email = forms.EmailField(label=_('ایمیل'), required=True, help_text=_('ایمیلتون رو وارد کنید'),
+                             widget=forms.TextInput(
+                                 attrs={"placeholder": "Password", "class": "no-background border-secondary rounded"}))
     password = forms.CharField(label=_('کلمه عبور'),
                                widget=forms.PasswordInput(
-                                   attrs={"placeholder": "Password", "class": "no-background border-secondary rounded"}),
+                                   attrs={"placeholder": "Password",
+                                          "class": "no-background border-secondary rounded"}),
                                required=True)
     password2 = forms.CharField(label=_('تکرار کلمه عبور'), widget=forms.PasswordInput(
         attrs={"placeholder": "Password", "class": "no-background border-secondary rounded"}), required=True)
@@ -64,4 +66,18 @@ class AddressForm(forms.ModelForm):
 class ImageForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('image', )
+        fields = ('image',)
+
+
+class EditNameForm(forms.Form):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'mobile')
+        widget = {'first_name': forms.TextInput(attrs={'placeholder': 'نام'}),
+                  'last_name': forms.TextInput(attrs={'placeholder': 'نام خانوادگی'}),
+                  'mobile': forms.NumberInput
+                  }
+        labels = {'first_name': _('نام'),
+                  'last_name': _('نام خانوادگی'),
+                  'mobile': _('موبایل'),
+                  }

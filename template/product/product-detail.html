@@ -7,7 +7,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h2><a href="{% url 'sub_category' product.category.slug %}" class="text-white">{{ product.category.name }}</a></h2>
+                    <h2><a href="{% url 'sub_category' product.category.slug %}"
+                           class="text-white">{{ product.category.name }}</a></h2>
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item">{{ product.name }}</li>
                         <li class="breadcrumb-item active">{{ product.category.name }}</li>
@@ -25,10 +26,6 @@
                 <div class="col-xl-7 col-lg-7 col-md-6">
                     <div class="single-product-details text-right">
                         <h2>{{ product.name }}</h2>
-                        <h2>{% for shop_product in product.shop_product.all %}
-                            <span><a href="{% url 'shop_detail' shop_product.shop.slug %}">{{ shop_product.shop.name }}</a></span>
-                        {% endfor %}
-                        </h2>
                         {% if min_shop_products ==  max_shop_products %}
                             <h5>{{ min_shop_products }}$</h5>
                         {% else %}
@@ -36,24 +33,26 @@
                         {% endif %}
                         <p class="available-stock"><span> {{ quantity }}موجودی </span>
                         </p>
-                        <h4>توضیح کوتاه : </h4>
+                        <h4> : توضیح کوتاه </h4>
                         <p>{{ product.detail }} </p>
 
                         <p class="add-to-btn mr-0">
                         <div class="add-comp">
                             {% if user.is_authenticated %}
-                                {% if product_like_user %}
-                                    <a id="product_heart_container" class="btn hvr-hover"
-                                       onclick="likeProduct({{ product.id }}, false)"><i class="fas fa-heart"></i></a>
-                                {% else %}
-                                    <a class="btn hvr-hover"
-                                       onclick="likeProduct({{ product.id }}, true)" id="product_heart_container"><i
-                                            class="far fa-heart"></i></a>
-                                {% endif %}
+                                <a id="product_heart_container" class="btn hvr-hover text-white"
+                                   onclick="likeProduct({{ product.id }}, true)"><i class="fas fa-heart"
+                                                                                    id="product_like">{{ product_likes }}</i>
+                                </a>
+                                <a class="btn hvr-hover text-white"
+                                   onclick="likeProduct({{ product.id }}, false)" id="product_heart_container"><i
+                                        class="far fa-heart" id="product_dislike">{{ product_dislikes }}</i></a>
                             {% else %}
                                 <a id="product_heart_container" class="btn hvr-hover"
                                    onclick="alert('لطفا وارد شوید')" href="{% url 'login' %}"><i
-                                        class="far fa-heart"></i></a>
+                                        class="fas fa-heart" id="product_like">{{ product_likes }}</i></a>
+                                <a class="btn hvr-hover" href="{% url 'login' %}" id="product_heart_container"
+                                   onclick="alert('لطفا وارد شوید')"><i
+                                        class="far fa-heart" id="product_dislike">{{ product_dislikes }}</i></a>
                             {% endif %}
                         </div>
                         </p>
@@ -125,7 +124,7 @@
                             {% for shop_product in shop_products %}
                                 <tr>
                                     <td class="name-pr">
-                                        <a href="#">{{ shop_product.shop.name }}</a>
+                                        <a href="{% url 'shop_detail' shop_product.shop.slug %}">{{ shop_product.shop.name }}</a>
                                     </td>
                                     <td class="text-secondary">
                                         <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
@@ -174,17 +173,18 @@
                                         class="fa fa-paper-plane" aria-hidden="true"></i></a>
                             </form>
                         {% endif %}
-                        <div id="comment_container">
+                        <div class="row" id="comment_container">
                             {% for comment in comments %}
-                                <div class="mt-3">
-                                    <p class="text-secondary">{{ comment.author.first_name }} {{ comment.author.last_name }}</p>
+                                <div class="col-6"></div>
+                                <div class="mt-3 col-6 bg-light">
+                                    <p class="text-dark">{{ comment.author.first_name }} {{ comment.author.last_name }}</p>
                                     {{ comment.content }}<br>
                                 </div>
-                                <div>
+                                <div class="col-12">
                                     <button class="bg-transparent border-0" onclick="likeComment({{ comment.id }})"><i
                                             class="fas fa-thumbs-up text-info"></i></button>
                                     <span id="like_count_container{{ comment.id }}"
-                                          class="text-info">{{ comment.like_count }} | </span>
+                                          class="text-info">{{ comment.like_count }} </span> |
                                     <button class="bg-transparent border-0"
                                             onclick="likeComment({{ comment.id }},false)"><i
                                             class="fas fa-thumbs-down text-danger"></i></button>
@@ -268,14 +268,8 @@
                 success: function (response) {
                     console.log(123)
                     const data = JSON.parse(response)
-                    if (condition === false) {
-                        $(`#product_heart_container`).innerHTML(`<i class="fas fa-heart"></i>`);
-                    } else {
-                        $(`#product_heart_container`).innerHTML(`<i class="far fa-heart"></i>`);
-                    }
-
-                    console.log(data.dislike_count)
-                    console.log(data.like_count)
+                    $(`#product_like`).text(`${data.like_count}`);
+                    $(`#product_dislike`).text(`${data.dislike_count}`);
                 },
             });
         }

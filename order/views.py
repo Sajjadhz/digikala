@@ -15,8 +15,9 @@ class CartView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         context['products'] = Product.objects.all()
-        context['basket'] = self.get_basket_basket_items()[0]
-        context['basket_items'] = self.get_basket_basket_items()[1]
+        if self.request.user.is_authenticated:
+            context['basket'] = self.get_basket_basket_items()[0]
+            context['basket_items'] = self.get_basket_basket_items()[1]
         return context
 
     def get_basket_total_price(self, basket_items):
@@ -26,24 +27,11 @@ class CartView(TemplateView):
         return total_price
 
     def get_basket_basket_items(self):
-        if self.request.user.is_authenticated:
-            basket = Basket.objects.filter(user=self.request.user)
-            basket_items = BasketItem.objects.filter(basket__user=self.request.user)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        elif Basket.objects.filter(user=self.request.user.is_anonymous):
-            basket = Basket.objects.filter(user=self.request.user.is_anonymous)
-            basket_items = BasketItem.objects.filter(basket__user=self.request.user.is_anonymous)
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
-        else:
-            basket = Basket.objects.create(user=self.request.user.is_anonymous)
-            basket_items = []
-            basket.total_price = self.get_basket_total_price(basket_items)
-            basket.save()
-            return [basket, basket_items]
+        basket = Basket.objects.get(user=self.request.user)
+        basket_items = BasketItem.objects.filter(basket__user=self.request.user)
+        basket.total_price = self.get_basket_total_price(basket_items)
+        basket.save()
+        return [basket, basket_items]
 
 
 class ZarrinPallView(TemplateView):
@@ -58,7 +46,8 @@ class ZarrinPallView(TemplateView):
             order = Order.objects.filter(draft=True).first()
         else:
             order = Order.objects.create(user=self.request.user)
-        context['order_items'] = self.create_order_items(BasketItem.objects.filter(basket__user=self.request.user), order)
+        context['order_items'] = self.create_order_items(BasketItem.objects.filter(basket__user=self.request.user),
+                                                         order)
         basket = Basket.objects.get(user=self.request.user)
         basket.total_price = 0
         basket.save()
@@ -66,8 +55,9 @@ class ZarrinPallView(TemplateView):
         order.draft = False
         order.save()
         context['order'] = order
-        context['basket'] = basket
-        context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
+        if self.request.user.is_authenticated:
+            context['basket'] = basket
+            context['basket_items'] = BasketItem.objects.filter(basket__user=self.request.user)
         return context
 
     def get_basket_total_price(self, order_items):
@@ -80,7 +70,7 @@ class ZarrinPallView(TemplateView):
         order_items = []
         for basket_item in basket_items:
             order_items.append(OrderItem.objects.create(order=order, shop_product=basket_item.shop_product, quantity=
-                                basket_item.quantity, price=basket_item.price, total=basket_item.total))
+            basket_item.quantity, price=basket_item.price, total=basket_item.total))
             shop_product = ShopProduct.objects.get(basket_item=basket_item)
             print('basket_item_quantity : ', basket_item.quantity)
             print('basket_item : ', basket_item)

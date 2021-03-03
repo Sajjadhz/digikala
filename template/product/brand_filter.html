@@ -7,9 +7,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>{{ category.name }}</h2>
+                    <h2>برند ها</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">خانه</a></li>
                         <li class="breadcrumb-item active"></li>
                     </ul>
                 </div>
@@ -26,7 +26,7 @@
                 <div class="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
                     <div class="product-categori">
                         <div class="search-product">
-                            <form action="{% url 'search' category.slug %}" method="get">
+                            <form action="{% url 'search' categories.0.slug %}" method="get">
                                 <input class="form-control" placeholder="Search here..." type="text" name='q'>
                                 <button type="submit"><i class="fa fa-search"></i></button>
                             </form>
@@ -76,11 +76,12 @@
                             </div>
                             <div class="brand-box">
                                 <ul>
-                                    <form method="get" action="">
+                                    <form method="post" action="#">
+                                        {% csrf_token %}
                                         {% for brand in brands %}
                                             <li>
                                                 <div class="radio radio-danger">
-                                                    <input type="checkbox" name="{{ brand.name }}"
+                                                    <input type="checkbox" name="brands"
                                                            id="Radios{{ brand.id }}" value="{{ brand.name }}">
                                                     <label for="Radios{{ brand.id }}"> {{ brand.name }} </label>
                                                 </div>
@@ -88,9 +89,6 @@
                                         {% endfor %}
                                         <input type="submit" value="فیلتر" class="bg-info">
                                     </form>
-
-
-
                                 </ul>
                             </div>
                         </div>
@@ -108,12 +106,12 @@
                                     <select id="basic" class="selectpicker show-tick form-control"
                                             data-placeholder="$ USD">
                                         <option data-display="Select">هیچ</option>
-                                        <option value="1" id="low_to_high_price"><a
-                                                href="{% url 'low_to_high_price' category.slug %}">از قیمت کم به
-                                            زیاد</a></option>
-                                        <option value="2" id="high_to_low_price"><a
-                                                href="{% url 'high_to_low_price' category.slug %}">از قیمت زیاد به
-                                            کم</a></option>
+                                        {#                                        <option value="1" id="low_to_high_price"><a#}
+                                        {#                                                href="{% url 'low_to_high_price' category.slug %}">از قیمت کم به#}
+                                        {#                                            زیاد</a></option>#}
+                                        {#                                        <option value="2" id="high_to_low_price"><a#}
+                                        {#                                                href="{% url 'high_to_low_price' category.slug %}">از قیمت زیاد به#}
+                                        {#                                            کم</a></option>#}
                                     </select>
                                 </div>
                                 <p> نمایش همه ی {{ products|length }} نتیجه </p>

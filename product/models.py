@@ -12,7 +12,7 @@ User = get_user_model()  # give user as object not like setting.AUTH_USER_MODEL 
 
 class Brand(models.Model):
     name = models.CharField(_('Name'), max_length=150)
-    image = models.ImageField(_('Image'), unique=True)
+    image = models.ImageField(_('Image'), null=True, blank=True)
     slug = models.CharField(_('Slug'), max_length=100)
     detail = models.TextField(_('Detail'))
 

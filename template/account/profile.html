@@ -6,10 +6,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>My Account</h2>
+                    <h2>حساب من</h2>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                        <li class="breadcrumb-item active">My Account</li>
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">خانه</a></li>
+                        <li class="breadcrumb-item active">حساب من</li>
                     </ul>
                 </div>
             </div>
@@ -26,11 +26,16 @@
                         <div class="account-box">
                             <div class="service-box">
                                 <div class="service-icon">
-                                    <a href="{% url 'orders' %}"> <i class="fa fa-gift"></i> </a>
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'orders' %}"> <i class="fa fa-gift"></i> </a>
+                                    {% else %}
+                                        <a href="{% url 'login' %}" onclick="alert('لطفا وارد شوید')"> <i class="fa fa-gift"></i> </a>
+                                    {% endif %}
+
                                 </div>
                                 <div class="service-desc">
-                                    <h4>Your Orders</h4>
-                                    <p>Track, return, or buy things again</p>
+                                    <h4>سفارشات </h4>
+                                    <p>محصولاتی قبلا خریده اید</p>
                                 </div>
                             </div>
                         </div>
@@ -39,11 +44,16 @@
                         <div class="account-box">
                             <div class="service-box">
                                 <div class="service-icon">
-                                    <a href="{% url 'fullname' %}"><i class="fa fa-lock"></i> </a>
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'fullname' %}"><i class="fa fa-lock"></i> </a>
+                                    {% else %}
+                                        <a href="{% url 'login' %}" onclick="alert('لطفا وارد شوید')"><i class="fa fa-lock"></i> </a>
+                                    {% endif %}
+
                                 </div>
                                 <div class="service-desc">
-                                    <h4>Login &amp; security</h4>
-                                    <p>Edit login, name, and mobile number</p>
+                                    <h4>اطلاعات هویتی</h4>
+                                    <p>ویرایش اسم و شماره موبایل</p>
                                 </div>
                             </div>
                         </div>
@@ -52,11 +62,17 @@
                         <div class="account-box">
                             <div class="service-box">
                                 <div class="service-icon">
-                                    <a href="{% url 'addresses' %}"> <i class="fa fa-location-arrow"></i> </a>
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'addresses' %}"> <i class="fa fa-location-arrow"></i> </a>
+                                    {% else %}
+                                        <a href="{% url 'login' %}" onclick="alert('لطفا وارد شوید')"> <i class="fa fa-location-arrow"></i> </a>
+                                    {% endif %}
+
+
                                 </div>
                                 <div class="service-desc">
-                                    <h4>Your Addresses</h4>
-                                    <p>Edit addresses for orders and gifts</p>
+                                    <h4>آدرس های من</h4>
+                                    <p>ویرایش آدرس ها</p>
                                 </div>
                             </div>
                         </div>
